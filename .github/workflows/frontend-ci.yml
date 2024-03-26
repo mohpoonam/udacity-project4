@@ -33,15 +33,11 @@ jobs:
           ${{ runner.os }}-node-   
     
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: 
-        cd starter/frontend
-        npm ci
+      run: cd starter/frontend && npm ci
 
     - name: Run lint
       run: 
-        cd starter/frontend
-        npm run lint
+        cd starter/frontend && npm run lint
   
   TEST:
     runs-on: ubuntu-latest
@@ -70,13 +66,11 @@ jobs:
     
     - name: Install dependencies
       run: 
-        cd starter/frontend
-        npm ci
+        cd starter/frontend && npm ci
 
     - name: Run tests
       run: 
-        cd starter/frontend
-        npm test
+        cd starter/frontend && npm test
   
   BUILD:
     runs-on: ubuntu-latest
@@ -107,20 +101,16 @@ jobs:
     #if: steps.cache.outputs.cache-hit != 'true'
     - name: Install dependencies      
       run: 
-        cd starter/frontend
-        npm ci
+        cd starter/frontend && npm ci
 
     - name: Run tests
       run: 
-        cd starter/frontend
-        npm run test
+        cd starter/frontend && npm run test
 
     - name: Build
       run: 
-        cd starter/frontend
-        npm build
+        cd starter/frontend && npm build
 
     - name: Docker Build
       run: 
-        cd starter/frontend
-        docker build -t udacity-project4:latest .
+        cd starter/frontend &&  docker build -t udacity-project4:latest .
