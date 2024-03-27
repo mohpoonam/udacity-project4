@@ -18,33 +18,44 @@ jobs:
         python-version: '3.x'
         cache: 'pip'
     - name: Install dependencies
-      run: cd starter/backend && python -m pip install --upgrade pip && pip install -r requirements.txt
+      run: cd starter/backend && pipenv install
     - name: Lint with Ruff
-      run: cd starter/backend && pip install ruff && ruff --output-format=github .
+      run: cd starter/backend && pipenv run lint
       continue-on-error: true
     - name: Test with pytest
-      run: cd starter/backend && pip test
+      run: cd starter/backend && pipenv run test
       # run: |
       #   pip install pytest pytest-cov
       #   pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
 
     
   ##############
-  TEST:
-    runs-on: ubuntu-latest
+  # TEST:
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout Code
+  #     uses: actions/checkout@v3
 
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'    
-    - name: Install dependencies
-      run: cd starter/backend && python -m pip install --upgrade pip && pip install -r requirements.txt
-    - name: Test with pytest
-      run: cd starter/backend &&  pip test
-  
+  #   - name: Use Node.js
+  #     uses: actions/setup-node@v3
+  #     with:
+  #       node-version: '18.x'
+  #   - name: Install dependencies
+  #     run: cd starter/backend && python -m pip install --upgrade pip && pip install -r requirements.txt
+  #   - name: Test with pytest
+  #     run: cd starter/backend && pip test
+
+  # BUILD:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout Code
+  #     uses: actions/checkout@v3
+
+  #   - name: Use Node.js
+  #     uses: actions/setup-node@v3
+  #     with:
+  #       node-version: '18.x'
   
 

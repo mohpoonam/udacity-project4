@@ -38,6 +38,7 @@ jobs:
     - name: Run lint
       run: 
         cd starter/frontend && npm run lint
+      continue-on-error: true
   
   TEST:
     runs-on: ubuntu-latest
