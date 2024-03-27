@@ -110,8 +110,8 @@ jobs:
 
     - name: Build
       run: 
-        cd starter/frontend && npm build
+        cd starter/frontend && npm run build
 
-    - name: Docker Build
-      run: 
-        cd starter/frontend &&  docker build -t udacity-project4:latest .
+    # - name: Docker Build
+    #   run: 
+    #     cd starter/frontend &&  docker build -t moviepicture:latest .
