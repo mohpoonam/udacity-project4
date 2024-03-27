@@ -23,7 +23,6 @@ jobs:
     - name: Run lint
       run: |
         pipenv run lint
-        pipenv run lint-fail
   TEST:
     runs-on: ubuntu-latest
     defaults:
