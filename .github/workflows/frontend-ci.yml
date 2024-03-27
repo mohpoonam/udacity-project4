@@ -42,7 +42,6 @@ jobs:
     - name: Run lint
       run: |
         npm run lint
-      continue-on-error: true
   
   TEST:
     runs-on: ubuntu-latest
