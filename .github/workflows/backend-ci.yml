@@ -9,60 +9,48 @@ on:
 jobs:
   LINT:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/backend
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-        cache: 'pip'
+      uses: actions/checkout@v3    
+    - name: Install pipenv
+      run: pip install pipenv
     - name: Install dependencies
+      run: pipenv install --dev
+    - name: Run lint
       run: |
-        cd starter/backend 
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Lint with Ruff
-      run: |
-        cd starter/backend 
-        pip install ruff
-        ruff .      
+        pipenv run lint
+  TEST:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/backend
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3    
+    - name: Install pipenv
+      run: pip install pipenv
+    - name: Install dependencies
+      run: pipenv install --dev
     - name: Test with pytest
       run: |
-        cd starter/backend        
-        pytest test_app.py
-      # run: |
-      #   pip install pytest pytest-cov
-      #   pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
-
-    
-  ##############
-  # TEST:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout Code
-  #     uses: actions/checkout@v3
-
-  #   - name: Use Node.js
-  #     uses: actions/setup-node@v3
-  #     with:
-  #       node-version: '18.x'
-  #   - name: Install dependencies
-  #     run: cd starter/backend && python -m pip install --upgrade pip && pip install -r requirements.txt
-  #   - name: Test with pytest
-  #     run: cd starter/backend && pip test
-
-  # BUILD:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout Code
-  #     uses: actions/checkout@v3
-
-  #   - name: Use Node.js
-  #     uses: actions/setup-node@v3
-  #     with:
-  #       node-version: '18.x'
-  
-
+        pipenv run test
+  BUILD:
+    runs-on: ubuntu-latest
+    needs: [LINT, TEST]
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/backend
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3    
+    - 
+      name: Docker build
+      run: |
+        docker build -t mp-backend:latest .
+     
