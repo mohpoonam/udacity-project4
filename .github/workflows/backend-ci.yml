@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.x'
         cache: 'pip'
     - name: Install dependencies
       run: |
@@ -29,7 +29,8 @@ jobs:
         ruff .      
     - name: Test with pytest
       run: |
-        cd starter/backend        
+        cd starter/backend     
+        pip install pytest   
         pytest test_app.py
       # run: |
       #   pip install pytest pytest-cov
