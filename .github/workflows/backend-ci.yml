@@ -9,29 +9,22 @@ on:
 jobs:
   LINT:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: starter/backend
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-        cache: 'pip'
+      uses: actions/checkout@v3    
+    - name: Install pipenv
+      run: pip install pipenv
     - name: Install dependencies
-      run: |
-        cd starter/backend 
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Lint with Ruff
-      run: |
-        cd starter/backend 
-        pip install ruff
-        ruff .      
+      run: pipenv install --dev
+    - name: Run lint
+      run: pipenv run lint
     - name: Test with pytest
       run: |
-        cd starter/backend     
-        pip install pytest   
-        pytest test_app.py
+        pipenv run lint
       # run: |
       #   pip install pytest pytest-cov
       #   pytest tests.py --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
