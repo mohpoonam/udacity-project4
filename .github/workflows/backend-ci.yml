@@ -23,11 +23,11 @@ jobs:
     - name: Lint with Ruff
       run: |
         pip install ruff
-        ruff --output-format=github .
-      continue-on-error: true
+        ruff .      
     - name: Test with pytest
       run: |
         cd starter/backend
+        pip install pytest pytest-cov
         pytest test_app.py
       # run: |
       #   pip install pytest pytest-cov
