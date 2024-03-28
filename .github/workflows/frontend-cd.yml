@@ -86,42 +86,18 @@ jobs:
       run:
         shell: bash
         working-directory: starter/frontend
+    env:        
+        AWS_REGION: us-east-1
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-
-    # - name: Use Node.js
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: '18.x'
-    # - name: Get npm cache directory
-    #   id: npm-cache-dir
-    #   shell: bash
-    #   run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
-    # - name: Cache action to restore cache
-    #   uses: actions/cache@v3
-    #   id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-    #   with:
-    #     path: ${{ steps.npm-cache-dir.outputs.dir }}
-    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-node-   
-    
-    # - name: Install dependencies      
-    #   run: 
-    #     npm ci
-    
-    # - name: Docker Build
-    #   run: 
-    #     docker build -t mp-frontend:latest . --build-arg REACT_APP_MOVIE_API_URL="reactMovieURL"
-    
+      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ env.AWS_REGION }}
     - 
       name: Login to Amazon ECR
       id: login-ecr
@@ -130,15 +106,21 @@ jobs:
     - 
       name: Push docker image to Amazon ECR
       env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        AWS_ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: frontend
-        #IMAGE_TAG: ${{ github.sha }}
       run: |
-          docker build -t $REGISTRY/$REPOSITORY:latest . --build-arg REACT_APP_MOVIE_API_URL="http://a1f48e8990f1742e7a5770670c505240-413271982.us-east-1.elb.amazonaws.com/"
-          docker push $REGISTRY/$REPOSITORY:latest
-    
+          docker build -t $AWS_ECR_REGISTRY/$REPOSITORY:${GITHUB_SHA::7} . --build-arg REACT_APP_MOVIE_API_URL="http://a1f48e8990f1742e7a5770670c505240-413271982.us-east-1.elb.amazonaws.com/"
+          docker push $AWS_ECR_REGISTRY/$REPOSITORY:${GITHUB_SHA::7}
+    - 
+      name: Kubeconfig Auth     
+      run: |
+          aws eks update-kubeconfig --name cluster --region ${{ env.AWS_REGION }}
+
     - name: Deploy to Kubernetes
+      env:
+        AWS_ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: frontend
       run: |
-        echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-        kubectl apply -f k8s/service.yaml --kubeconfig=kubeconfig.yaml
-        kubectl apply -f k8s/deployment.yaml --kubeconfig=kubeconfig.yaml
+        cd k8s
+        kustomize edit set image frontend=$AWS_ECR_REGISTRY/$REPOSITORY:${GITHUB_SHA::7}
+        kustomize build | kubectl apply -f -       
