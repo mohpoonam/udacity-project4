@@ -81,5 +81,6 @@ jobs:
         AWS_ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: backend
       run: |
+        cd k8s
         kustomize edit set image frontend=$AWS_ECR_REGISTRY/$REPOSITORY:${GITHUB_SHA::7}
         kustomize build | kubectl apply -f -       
